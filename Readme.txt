@@ -40,7 +40,7 @@ Resources:
 
 * Jmol for structure viewing
    - http://wiki.jmol.org/index.php/Main_Page
-   - http://wiki.cns.uaf.edu/tlab/JmolNotes
+   - https://chemapps.stolaf.edu/jmol/docs/
 
 * Webatoms: http://millenia.cars.aps.anl.gov/webatoms/
 
