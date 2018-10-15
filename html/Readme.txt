@@ -1,15 +1,14 @@
 
 The files here can be used to setup a simple web server to do xtal 
-computations and display structures using jmol.  These notes are 
-intended to help with setup...  
+computations and display structures using jmol.  
 
-Pre-requisites
-==============
-* Apache server 
-  - Configured to run cgi scripts
+Setup
+=====
+* Pre-requisites 
+  - Apache server configured to run cgi scripts
   - Python3 with numpy and pyxrs modules
 
-* The following file structure is assumed here:
+* The following file structure is assumed:
   
   server_root/cgi-bin
              /jmol

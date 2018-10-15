@@ -5,19 +5,25 @@ computations (pyxrs)
 
 Quick install:
 -------------
-1.  Unpack the distribution to a tmp folder
-2.  Run the setup.py file:  >>python3 pyxrs/setup.py install
+1.  Unpack the distribution to a temporary folder
+2.  Run the setup.py file:  >>python3 setup.py install
 
 
 Brief description of modules:
 -----------------------------
-* pyxrs/geom
+* geom
   - Goniometer calculations for a six-circle (and kappa) geometry
     including computation of active area
 
+* html
+  - Files for running a simple web interface to the xtal module.
+    Generate xyz files for bulk and surface structures, and do 
+    basic coordination computations. See html/Readme.txt for setup info.
+
 * xtal
-  - crystallography computations including reading and writing structure
-    files, transformation of coordinates, generation of surfaces etc..
+  - Crystallography computations including reading and writing structure
+    files, transformation of coordinates, generation of surfaces, coordination 
+    sphere computations etc..
 
 Docs:
 -----
