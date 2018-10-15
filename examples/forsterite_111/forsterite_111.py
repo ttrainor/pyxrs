@@ -11,7 +11,7 @@ from pyxrs.xtal.surface import SurfaceCell, surface_to_xyz
 uc = cif_to_uc('forsterite.cif')
 surf = SurfaceCell(uc,hkl=[1,1,1],nd=1,term=0)
 surf.write()
-surface_to_xyz("forsterite_111.xyz",surf,cartesian=True,na=1,nb=1,nbulk=5,term=-99,long_fmt=False)
+surface_to_xyz(surf,fname="forsterite_111.xyz",cartesian=True,na=1,nb=1,nbulk=5,term=-99,long_fmt=False)
 
 #######
 # coordination calculations

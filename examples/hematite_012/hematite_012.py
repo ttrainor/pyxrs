@@ -37,8 +37,8 @@ surf.write()
 #for j in range(len(surf.Vr_lst)): print(surf.Vr_lst[j])
 
 ## write surface coordinate files
-surface_to_xyz("hematite_012.xyz",surf,cartesian=True,na=2,nb=2,nbulk=2,long_fmt=True)
-surface_to_xyz("hematite_012.frac",surf,cartesian=False,na=1,nb=1,nbulk=2,long_fmt=True)
+surface_to_xyz(surf,fname="hematite_012.xyz",cartesian=True,na=2,nb=2,nbulk=2,long_fmt=True)
+surface_to_xyz(surf,fname="hematite_012.frac",cartesian=False,na=1,nb=1,nbulk=2,long_fmt=True)
 
 # coordination calculations
 from pyxrs.xtal.coord import coord_calcs

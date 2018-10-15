@@ -6,6 +6,8 @@ recursive-exclude examples *.pyc  __pycache__
 recursive-include geom *.py
 recursive-exclude geom *.pyc  __pycache__
 recursive-include scripts *
+recursive-include html *
+recursive-exclude html *.pyc  __pycache__
 recursive-include xtal *.py *.cif
 recursive-exclude xtal *.pyc  __pycache__
 

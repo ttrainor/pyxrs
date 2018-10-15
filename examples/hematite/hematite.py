@@ -16,7 +16,7 @@ at_list = uc.atom_list()
 at_list.write()
 
 ## output xyz file
-uc_to_xyz(uc,fname="hematite.xyz",na=2,nb=2,nc=2)
+uc_to_xyz(uc,fname="hematite.xyz",na=2,nb=2,nc=2,long_fmt=True)
 #uc_to_xyz(uc,fname="hematite.xyz",cartesian=False)
 
 ## output cif file with assymetric unit (similiar to what we read in)

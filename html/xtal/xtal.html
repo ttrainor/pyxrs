@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Xtal Stucture</h1>
+
+<form enctype = "multipart/form-data" action="../cgi-bin/xtal.cgi" method="post" >
+
+    <!-- File upload and submitt-->
+    CIF File: <input name="cif_file" type="file">
+    <input type="submit" name="submitt_button" value="Submitt" />
+    </br></br>
+
+    <!-- Output Parameters -->
+    <h3>Output Parameters </h3>
+    <A Title="Unit cell repeats along a-axis (positive integer)"> 
+        na = <input type="text" name="na" size="2" maxlength="2" value="1"/> 
+    </A>
+    <A Title="Unit cell repeats along b-axis (positive integer)"> 
+        nb = <input type="text" name="nb" size="2" maxlength="2" value="1"/>
+    </A>
+    <A Title="For bulk xtal the unit cell repeats along c-axis (positive integer).  For surface model the number of bulk cell repeats; 0 for no bulk (termination only) or positive integer for extended bulk. "> 
+        nc/nbulk = <input type="text" name="nc" size="2" maxlength="2" value="1"/>
+    </A>
+    </br>
+    <A Title="If True output will be in long format"> 
+        <label for="long_fmt"> Long Format Output: </label>
+        <select name="long_fmt">
+            <option>True</option>
+            <option>False</option>
+        </select>
+    </A> 
+    </br></br>
+
+    <!-- Surface params -->
+    <h3>Surface parameters (leave HKL blank for bulk model only)</h3>
+    <A Title="HKL values defining the surface plane"> 
+        H = <input type="text" name="H" size="2" maxlength="2" value=""/>
+        K = <input type="text" name="K" size="2" maxlength="2" value=""/>
+        L = <input type="text" name="L" size="2" maxlength="2" value=""/>
+    </A>
+    </br>
+    <A Title="Number of dspacing defining the surface cell thickness (positive integer)"> 
+        nd = <input type="text" name="nd" size="2" maxlength="2" value="1"/>
+    </A>
+    <A Title="Termination layer (positive or negative integer).  If zero the surface model has a full unit cell, +1 then one additional atomic layer is added etc."> 
+        term = <input type="text" name="term" size="2" maxlength="2" value="0"/>
+    </A>
+    </br>
+    <A Title="Transformation matrix to make bulk unit cell primitive"> 
+        Bulk Tansform =  <input type="text" name="bulk_trns" size="35" maxlength="75" value=""/>
+    </A>
+    </br>
+    <A Title="If selected this will display the bulk xtal with hkl plane"> 
+        Show HKL Plane:
+        <input type="radio" name="show_bulk_hkl" value="True" checked> Yes
+        <input type="radio" name="show_bulk_hkl" value="False"> No
+    </A> 
+    </br></br>
+
+    <!-- Coord params -->
+    <h3>Coordination Calculation Parameters</h3>
+    <A Title="Radial distance for coordination calculations"> 
+        rmax = <input type="text" name="rmax" size="3" maxlength="2" value="2.5"/>
+        Set to zero for no calcs  (max is 10 angstroms)
+    </A> 
+    </br>
+    <A Title="Atom site labels for doing coordination calcs.  If blank and no surface specified calcs are done for each unique atom in the unit cell.  For a surface calcs are done for all atoms in the termination cell"> 
+        Labels (comma delim) =  <input type="text" name="labels" size="35" maxlength="75" value=""/>
+    </A> 
+    </br></br>
+
+</form></body></html>
+
+
+
+

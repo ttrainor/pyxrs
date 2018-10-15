@@ -179,8 +179,8 @@ def uc_to_xyz(uc,fname=None,cartesian=True,na=1,nb=1,nc=1,long_fmt=False):
 
     Returns:
     -------
-    * If fname is not None, output is to the file
     * If fname is None then this returns an AtomList instance
+    * If fname is not None, output is to the file
 
     Notes:
     ------
@@ -286,11 +286,11 @@ class UnitCell:
         lout = lout + repr(self.lattice)
         if len(self.sites) > 0:
             lout = lout + "\nAssymetric unit:\n"
-            lout = lout + "label  sym   x       y       z     occ    ox    Uiso       U11       U12        U13       U22       U23      U33\n"
+            lout = lout + "sym    x        y      z    label  occ    ox     Uiso       U11       U12        U13       U22       U23      U33\n"
             for j in range(len(self.sites)):
-                lout = lout + "%4s  %2s  %4.4f  %4.4f  %4.4f" % (self.sites[j].label,self.sites[j].atsym,
-                                                                 self.sites[j].x,self.sites[j].y,
-                                                                 self.sites[j].z)
+                lout = lout + "%2s  %4.4f  %4.4f  %4.4f  %4s" % (self.sites[j].atsym, self.sites[j].x,
+                                                                 self.sites[j].y, self.sites[j].z, 
+                                                                 self.sites[j].label,)
                 lout = lout + "  %3.3f  %+3.1f  %6.5f" % (self.sites[j].occ, self.sites[j].ox, self.sites[j].Uiso)
                 lout = lout + "   %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f\n"  % (self.sites[j].Uaniso[0], self.sites[j].Uaniso[1],
                                                                                   self.sites[j].Uaniso[2], self.sites[j].Uaniso[3],

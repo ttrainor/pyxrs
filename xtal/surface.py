@@ -136,14 +136,14 @@ from pyxrs.xtal import unitcell
 from pyxrs.xtal.atom_list import merge_alist, AtomList, _expand_, _expand_frac, _reduce_frac 
 
 ##########################################################################
-def surface_to_xyz(fname,surf,cartesian=True,na=1,nb=1,nbulk=1,term=-99,long_fmt=False):
+def surface_to_xyz(surf,fname=None,cartesian=True,na=1,nb=1,nbulk=1,term=-99,long_fmt=False):
     """
     List surface file
 
     Parameters:
     -----------
-    * fname: output file
     * surf: SurfaceCell instance
+    * fname: output file
     * cartesian: if True output in cartesian, otherwise in fractional coordinates
     * na, nb: number of cell repeats in the in-plane (a,b) directions
     * nbulk: number of repeats of the unit cell in the "bulk" direction (i.e. -c)
@@ -157,6 +157,11 @@ def surface_to_xyz(fname,surf,cartesian=True,na=1,nb=1,nbulk=1,term=-99,long_fmt
             if term=-1 then one atomic layer is removed from the top 
             etc.
     * long_fmt: output in long format
+
+    Returns:
+    -------
+    * If fname is not None, output is to the file
+    * If fname is None then this returns an AtomList instance
 
     Notes:
     ------
@@ -172,10 +177,14 @@ def surface_to_xyz(fname,surf,cartesian=True,na=1,nb=1,nbulk=1,term=-99,long_fmt
     if atlist == None: 
         print("No atoms returned in surface_to_xyz")
         return
-    fout = open(fname,'w')
-    fout.write("%i\n" % atlist.natoms) 
-    fout.write(atlist._write(long_fmt=long_fmt,header=True))
-    fout.close()
+    if fname is not None:
+        fout = open(fname,'w')
+        fout.write("%i\n" % atlist.natoms) 
+        fout.write(atlist._write(long_fmt=long_fmt,header=True))
+        fout.close()
+        return
+    else:
+        return atom_list
 
 ##########################################################################
 class SurfaceCell:
@@ -236,14 +245,14 @@ class SurfaceCell:
         lout = lout + "\nP1 surface cell (surface fractional coords)\n"
         # list P1 cell.  note atoms are stored in 
         # ascending order, here we list them descending order
-        lout = lout + "      label   sym     x       y         z"
+        lout = lout + "  sym     x       y         z          label"
         if long_fmt==True:
-            lout = lout + "     occ     ox    Uiso       U11       U12        U13       U22       U23       U33"
+            lout = lout + "   occ     ox    Uiso       U11       U12        U13       U22       U23       U33"
         lout = lout + "\nTermination  (termination layer = %i)\n"  % self.term
         for j in range(self.p1term.natoms-1,-1,-1):
-            lout = lout + "%12s  %2s  %6.5f  %6.5f  %6.5f" % (self.p1term.labels[j],self.p1term.atsym[j],
-                                                              self.p1term.coords[j][0], self.p1term.coords[j][1],
-                                                              self.p1term.coords[j][2])
+            lout = lout + "  %2s  %6.5f  %6.5f  %6.5f  %12s" % (self.p1term.atsym[j], self.p1term.coords[j][0], 
+                                                              self.p1term.coords[j][1], self.p1term.coords[j][2],
+                                                              self.p1term.labels[j])
             if long_fmt==True:
                 lout = lout + "  %3.3f  %+3.1f  %6.5f" % (self.p1term.occ[j], self.p1term.ox[j], self.p1term.Uiso[j])
                 lout = lout + "   %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f"  % (self.p1term.Uaniso[j,0], self.p1term.Uaniso[j,1],
@@ -252,9 +261,9 @@ class SurfaceCell:
             lout = lout + "\n"
         lout = lout + "Bulk\n"
         for j in range(self.p1bulk.natoms-1,-1,-1):
-            lout = lout + "%12s  %2s  %6.5f  %6.5f  %6.5f" % (self.p1bulk.labels[j],self.p1bulk.atsym[j],
-                                                              self.p1bulk.coords[j][0], self.p1bulk.coords[j][1],
-                                                              self.p1bulk.coords[j][2])
+            lout = lout + "  %2s  %6.5f  %6.5f  %6.5f  %12s" % (self.p1bulk.atsym[j], self.p1bulk.coords[j][0], 
+                                                              self.p1bulk.coords[j][1], self.p1bulk.coords[j][2], 
+                                                              self.p1bulk.labels[j])
             if long_fmt==True:
                 lout = lout + "  %3.3f  %+3.1f  %6.5f" % (self.p1bulk.occ[j], self.p1bulk.ox[j], self.p1bulk.Uiso[j])
                 lout = lout + "   %8.5f  %8.5f  %8.5f  %8.5f  %8.5f  %8.5f"  % (self.p1bulk.Uaniso[j,0], self.p1bulk.Uaniso[j,1],

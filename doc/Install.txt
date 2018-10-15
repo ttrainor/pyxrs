@@ -8,7 +8,7 @@ to install them. Usually the most recent 'stable version' is best.
 
 * Python (3.5 or higher)  (http://www.python.org/download/), 
 * Numpy (http://numpy.scipy.org/)
-(* Matplotlib (http://matplotlib.sourceforge.net/))
+* Matplotlib (http://matplotlib.sourceforge.net/)
 
 After installing python and associated packages, make sure the python installation 
 directory is on your systems 'PATH' so that `>>python` works from your command line
@@ -16,11 +16,11 @@ directory is on your systems 'PATH' so that `>>python` works from your command l
 
 Install pyxrs into 'site-packages'
 -----------------------------------
-* You can download a recent source tarball (or zipfile) from the 
-  download page (https://github.com/xraypy/tdl/downloads)
+* You can download the source code as a zipfile from: 
+  https://github.com/ttrainor/pyxrs/archive/master.zip
 
-* Or you can download the most recent source using git: 
-  ` >>git clone http://github.com/xraypy/tdl.git `
+* Or clone the project using git: 
+  ` >>git clone http://github.com/ttrainor/pyxrs.git `
 
 * Install into your site-packages using: `>>python setup.py install `
 

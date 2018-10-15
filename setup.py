@@ -88,40 +88,40 @@ for mod in required_modules:
 ### package dir - mapping directory names used by packages 
 # and package_data 
 package_dir  = {'pyxrs':'',
-                'pyxrs.doc':'doc',
-                'pyxrs.examples':'examples',
+#                'pyxrs.doc':'doc',
+#                'pyxrs.examples':'examples',
                 'pyxrs.geom':'geom',
-                'pyxrs.scripts':'scripts',
+#                'pyxrs.scripts':'scripts',
                 'pyxrs.xtal':'xtal'}
 
 ### packages
 packages     = ['pyxrs',
-                'pyxrs.examples',
+#                'pyxrs.examples',
                 'pyxrs.geom',
                 'pyxrs.xtal']
 
 ### package data
 package_data = {}
 package_data.update({'pyxrs':['Readme.txt']})
-packages.append('pyxrs.doc')
-package_data.update({'pyxrs.doc':['Install.txt', 'License.txt']})
+#packages.append('pyxrs.doc')
+#package_data.update({'pyxrs.doc':['Install.txt', 'License.txt']})
 
 ### include examples...
 # note that the individual example dirs arent 'packages'
 # so disutils complains, but this seems to get the files in the
 # right place (same with 'doc' above)
-def add_example(ex):
-    name = 'pyxrs.examples.' + ex 
-    pth  = os.path.join('examples',ex)
-    package_dir.update({name:pth})
-    packages.append(name)
-    package_data.update({name:['*.py','*.cif','*.spt']})
-add_example('cristobalite')
-add_example('forsterite')
-add_example('forsterite_111')
-add_example('hematite')
-add_example('hematite_012')
-add_example('pyrite')
+#def add_example(ex):
+#    name = 'pyxrs.examples.' + ex 
+#    pth  = os.path.join('examples',ex)
+#    package_dir.update({name:pth})
+#    packages.append(name)
+#    package_data.update({name:['*.py','*.cif','*.spt']})
+#add_example('cristobalite')
+#add_example('forsterite')
+#add_example('forsterite_111')
+#add_example('hematite')
+#add_example('hematite_012')
+#add_example('pyrite')
 
 ### scripts
 #import glob
