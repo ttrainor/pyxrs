@@ -1,0 +1,38 @@
+####################################
+# Some example jmol commands
+# see https://chemapps.stolaf.edu/jmol/docs/examples-11/sym.htm
+####################################
+
+# load a structure
+load "hematite.xyz"
+#load "hematite_p1.cif"
+
+# load a cif file with frac coords and symmetry ops
+# the {} is the number of unit cells to show
+# {1 1 1} shows single unit cell filled
+# if dont pass a {}, just the assymetric unit is shown
+#load "hematite_frac.cif" {1 1 1}
+#load "hematite_frac.cif" {2 2 2}
+#set defaultLattice {2 2 2} 
+#load "hematite_frac.cif" 
+
+# delete all bonds and redraw with a 
+# different max bonding distance criterion
+#select all;
+#connect (selected) (selected) Delete
+connect (all) (all) Delete
+connect 2.2 (all) (all) Create
+
+# change line thickness
+#wireframe 50;
+
+# polyhedra
+#select iron
+#polyhedra bonds
+
+# add a bounding box
+#boundbox;
+
+# show unit cell (I think this on by default when using frac coords)
+#set showUnitCell on
+
