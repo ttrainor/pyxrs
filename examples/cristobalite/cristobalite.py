@@ -2,22 +2,22 @@
 Follow example 5.2.3 from Int Tables Vol A
 """
 ##############################
-from xtal.unitcell import cif_to_uc, uc_to_xyz, transform_unitcell
+from xtal.unitcell import read_cif
 ##############################
 
 ## generate UnitCell instance for cristobalite_low
 ## display the unit cell contents and write an xyz file
 print("**Cristobalite low")
-uc_low = cif_to_uc('cristobalite_low.cif')
-uc_low.write()
-uc_to_xyz(uc_low,fname="cristobalite_low.xyz",na=3,nb=3,nc=3)
+uc_low = read_cif('cristobalite_low.cif')
+uc_low.show()
+uc_low.write_xyz("cristobalite_low.xyz",na=3,nb=3,nc=3)
 
 ## generate UnitCell instance for cristobalite_high
 ## display the unit cell contents and write an xyz file
 print("**Cristobalite high")
-uc_high = cif_to_uc('cristobalite_high.cif')
-uc_high.write()
-uc_to_xyz(uc_high,fname="cristobalite_high.xyz",na=3,nb=3,nc=3)
+uc_high = read_cif('cristobalite_high.cif')
+uc_high.show()
+uc_high.write_xyz("cristobalite_high.xyz",na=3,nb=3,nc=3)
 
 ####
 # transform the cristobalite_low lattice to compare with cristobalite_high
@@ -32,18 +32,14 @@ uc_to_xyz(uc_high,fname="cristobalite_high.xyz",na=3,nb=3,nc=3)
 # compare these results to example 5.2.3 in Int Tables Vol A
 ###
 print("**Cristobalite low transformed")
-Va = [1,1,0]
-Vb = [-1,1,0]
-Vc = [0,0,1]
-shift = [0.25, 0.25, 0]
-uc_low_new = transform_unitcell(uc_low,Va=Va,Vb=Vb,Vc=Vc,shift=shift)
-uc_low_new.write()
+Va = [1,1,0]; Vb = [-1,1,0]; Vc = [0,0,1]; shift = [0.25, 0.25, 0]
+uc_low_new = uc_low.transform(Va=Va,Vb=Vb,Vc=Vc,shift=shift)
+uc_low_new.show()
+uc_low_new.write_xyz("cristobalite_low_new.xyz",na=3,nb=3,nc=3)
 
 ## print P1 coordinates of the new cell
-print("P1 cell")
+print("**Cristobalite low transformed P1 cell")
 at_list = uc_low_new.atom_list()
-at_list.write()
-## write an xyz file for the new lattice setting
-uc_to_xyz(uc_low_new,fname="cristobalite_low_new.xyz",na=3,nb=3,nc=3)
+at_list.show()
 
 

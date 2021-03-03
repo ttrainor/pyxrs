@@ -253,13 +253,13 @@ class Coord:
             lout = lout + "\n"
         return lout
 
-    def write(self,fname=None,long_fmt=True):
-        if fname is None:
-            print(self._write(long_fmt=long_fmt))
-        else:
-            fout = open(fname,'w')
-            fout.write(self._write(long_fmt=long_fmt))
-            fout.close()
+    def show(self,long_fmt=True):
+        print(self._write(long_fmt=long_fmt))
+
+    def write(self,fname="coord.out",long_fmt=True):
+        fout = open(fname,'w')
+        fout.write(self._write(long_fmt=long_fmt))
+        fout.close()
 
 class CoordPoly:
     """

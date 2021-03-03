@@ -16,13 +16,15 @@ Todo:
 
 """
 ##########################################################################
-import os, copy
+import os, copy, re
 import numpy as num
+from xtal import space_grps
 
+atsym_parse = re.compile(r'[A-Z][a-z]?')
 ##########################################################################
-def read_cif(fname):
+def read(fname):
     """
-    Read cif file
+    Read xtal data from a cif file
 
     Parameters:
     ----------
@@ -37,7 +39,7 @@ def read_cif(fname):
     * occ:    num.array([occ0,occ1...])  (default to ones) 
     * ox:     num.array([ox0,ox1...])   (default to all 99)
     * Uiso:   num.array([U0, U1...])    (default to zeros)
-    * Uaniso: num.array([[U0_11, U0_12, U0_12, U0_13, U0_22, U0_23, U0_33], ...])  (default to zeros)
+    * Uaniso: num.array([[U0_11, U0_12, U0_13, U0_22, U0_23, U0_33], ...])  (default to zeros)
     * symops: ['sym_str1','sym_str2',...]  or  None
     
     Notes:
@@ -47,28 +49,33 @@ def read_cif(fname):
     """
     cf = CifFile(fname)
     # unit cell parameters
-    a = float(cf['_cell_length_a'])
-    b = float(cf['_cell_length_b'])
-    c = float(cf['_cell_length_c'])
-    alpha = float(cf['_cell_angle_alpha'])
-    beta  = float(cf['_cell_angle_beta'])
-    gamma = float(cf['_cell_angle_gamma'])
+    a = _get_float(cf['_cell_length_a'])
+    b = _get_float(cf['_cell_length_b'])
+    c = _get_float(cf['_cell_length_c'])
+    alpha = _get_float(cf['_cell_angle_alpha'])
+    beta  = _get_float(cf['_cell_angle_beta'])
+    gamma = _get_float(cf['_cell_angle_gamma'])
     cell  = [a,b,c,alpha,beta,gamma]
     
     # site labels and fractional coords
-    labels = cf['_atom_site_label']
+    labels = copy.copy(cf['_atom_site_label'])
     x = cf['_atom_site_fract_x']
     y = cf['_atom_site_fract_y']
     z = cf['_atom_site_fract_z']
     nsite = len(labels)
     coords = num.zeros((nsite,3))
     for j in range(nsite):
-        coords[j,0] = float(x[j])
-        coords[j,1] = float(y[j])
-        coords[j,2] = float(z[j])
+        coords[j,0] = _get_float(x[j])
+        coords[j,1] = _get_float(y[j])
+        coords[j,2] = _get_float(z[j])
     
     # atomic symbols
     atsym = cf['_atom_site_type_symbol']
+    if atsym is None: atsym = copy.copy(cf['_atom_site_label'])
+    for j in range(nsite):
+        tmp = atsym_parse.findall(atsym[j])
+        if len(tmp) == 0: raise ValueError
+        atsym[j] = tmp[0]
     
     # site occupancy 
     occ = cf['_atom_site_occupancy']
@@ -76,7 +83,7 @@ def read_cif(fname):
         occ = num.ones(nsite)
     else:
         for j in range(nsite):
-            occ[j] = float(occ[j])
+            occ[j] = _get_float(occ[j])
         occ = num.array(occ)
         
     # oxidation states
@@ -86,7 +93,7 @@ def read_cif(fname):
         ox = ox*99
     else:
         for j in range(nsite):
-            ox[j] = float(ox[j])
+            ox[j] = _get_float(ox[j])
     
     # Uiso (Biso)
     Uiso = cf['_atom_site_U_iso_or_equiv']
@@ -94,10 +101,10 @@ def read_cif(fname):
         Uiso = cf['_atom_site_B_iso_or_equiv']
         if Uiso is not None:
             for j in range(nsite):
-                Uiso[j] = float(Uiso[j]) / (8*num.pi**2)
+                Uiso[j] = _get_float(Uiso[j]) / (8*num.pi**2)
     else:
         for j in range(nsite):
-            Uiso[j] = float(Uiso[j]) 
+            Uiso[j] = _get_float(Uiso[j]) 
     if Uiso is None:
         Uiso = num.zeros(nsite)
     else:
@@ -110,12 +117,10 @@ def read_cif(fname):
     if aniso_label is not None:
         # cross check and make sure same order as labels
         if len(aniso_label) != nsite:
-            print("Error number of anisotropic labels doesnt match atom site labels")
-            return
+            raise ValueError("Error number of anisotropic labels doesnt match atom site labels")
         for j in range(nsite):
             if aniso_label[j] != labels[j]:
-                print("Error: anisotropic labels dont match atom site labels")
-                return
+                raise ValueError("Error: anisotropic labels dont match atom site labels")
         convert = False
         U_11 = cf['_atom_site_aniso_U_11']
         U_12 = cf['_atom_site_aniso_U_12']
@@ -132,25 +137,51 @@ def read_cif(fname):
             U_23 = cf['_atom_site_aniso_B_23']
             U_33 = cf['_atom_site_aniso_B_33']
         for j in range(nsite):
-            Uaniso[j,0] = float(U_11[j])
-            Uaniso[j,1] = float(U_12[j])
-            Uaniso[j,2] = float(U_13[j])
-            Uaniso[j,3] = float(U_22[j])
-            Uaniso[j,4] = float(U_23[j])
-            Uaniso[j,5] = float(U_33[j])
+            Uaniso[j,0] = _get_float(U_11[j])
+            Uaniso[j,1] = _get_float(U_12[j])
+            Uaniso[j,2] = _get_float(U_13[j])
+            Uaniso[j,3] = _get_float(U_22[j])
+            Uaniso[j,4] = _get_float(U_23[j])
+            Uaniso[j,5] = _get_float(U_33[j])
         if convert: Uaniso = Uaniso / (8*num.pi**2)
         
     # symmetry operations
     symops = cf['_space_group_symop_operation_xyz']
     if symops is None:
         symops = cf['_symmetry_equiv_pos_as_xyz']
-        
-    #return cell_params, labels, atomic_symbols, coords, sym_operations
+    # if no symops try to get from sg
+    if symops is None:
+        # space group (HM)
+        sg = cf['_symmetry_space_group_name_H-M']
+        if sg is not None:
+            symops = space_grps.get_symops(sg)
+
     return cell,labels,atsym,coords,symops,occ,ox,Uiso,Uaniso
 
-def write_cif(fname,labels,lattice,coords,atsym=None,symop=None,occ=None,ox=None,Uiso=None,Uaniso=None):
+def _get_float(val):
     """
-    Write a cif file
+    convert a string to a float
+    deal with errors -> 5.235(4)
+    """
+    try: val = float(val)
+    except: val, err = _get_float_err(val)
+    return val
+
+def _get_float_err(val):
+    """
+    convert number 5.23(4) to 5.23, 0.04
+    """
+    i = val.find('(')
+    x = val[:i]
+    e = val[i+1]
+    ee = "".join(['0' if z is not '.' else '.' for z in x[:-1]])
+    ee = ee + e
+    #print(val, x, ee)
+    return float(x), float(ee)
+
+def write(fname,labels,lattice,coords,atsym=None,symop=None,occ=None,ox=None,Uiso=None,Uaniso=None):
+    """
+    Write xtal data to a cif file
 
     Parameters:
     --------
@@ -332,6 +363,13 @@ class CifFile:
                 loop_dict[lbls[k]].append(data[j][k])
         return loop_dict
 
-##########################################################################
-
-
+###############################################################################
+###############################################################################
+if __name__ == '__main__':
+    #print(_get_float('5.234(5)'))
+    #print(_get_float_err('5.234(5)'))
+    #print(_get_float_err('5(1)'))
+    #print(_get_float_err('1.230(9)'))
+    fname = 'COD_Fe2O3.cif'
+    #fname = 'AMS_Fe2O3.cif'
+    cell,labels,atsym,coords,symops,occ,ox,Uiso,Uaniso = read(fname)

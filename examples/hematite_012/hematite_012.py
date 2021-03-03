@@ -3,12 +3,12 @@ Generate a surface cell for hematite (1,-1,2) surface
 """
 ##############################
 import numpy as num
-from xtal.unitcell import cif_to_uc, uc_to_cif, uc_to_xyz 
+from xtal.unitcell import read_cif, write_cif, write_xyz 
 from xtal.surface import SurfaceCell, surface_to_xyz
 ##############################
 
 ### get the bulk unit cell
-uc = cif_to_uc('hematite.cif')
+uc = read_cif('hematite.cif')
 
 ### this computes the surface cell.  note we pass the hex_to_rhom
 ### matrix so that the bulk hexagonal cell is transformed to a

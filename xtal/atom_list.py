@@ -126,23 +126,31 @@ class AtomList:
             out = out + "\n"
         return out
 
-    def write(self,fname=None,long_fmt=True,header=True):
+    def show(self, long_fmt=True, header=True):
         """
-        write to a file (or output to stdout)
+        display to std out
 
         Arguments:
         ----------
-        * fname: output file (if None goes to stdout)
         * long_fmt: if True use long format
         * header: include lattice params and column labels as a header
         """
-        if fname is None:
-            print(self._write(long_fmt=long_fmt,header=header))
-        else:
-            fout = open(fname,'w')
-            fout.write("%i\n" % self.natoms)
-            fout.write(self._write(long_fmt=long_fmt,header=header))
-            fout.close()
+        print(self._write(long_fmt=long_fmt,header=header))
+
+    def write_xyz(self,fname="atomlist.xyz",long_fmt=True,header=True):
+        """
+        write to a file
+
+        Arguments:
+        ----------
+        * fname: output file
+        * long_fmt: if True use long format
+        * header: include lattice params and column labels as a header
+        """
+        fout = open(fname,'w')
+        fout.write("%i\n" % self.natoms)
+        fout.write(self._write(long_fmt=long_fmt,header=header))
+        fout.close()
 
     def add_atom(self,label,atsym,coord,occ=1.,ox=99,Uiso=0,Uaniso=[0.,0.,0.,0.,0.,0.]):
         """

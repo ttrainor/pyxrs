@@ -1,5 +1,5 @@
 
-Some python3 modules for xtalography and xray scattering 
+Some python3 modules for crystallography and xray scattering 
 computations
 =====================================================
 

@@ -2,12 +2,12 @@
 Test some xtal calcs using pyrite
 """
 ##############################
-from xtal.unitcell import cif_to_uc, uc_to_xyz
+from xtal.unitcell import read_cif, write_xyz
 ##############################
 
 ## Read pyrite cif file
 ## and display unit cell info
-uc = cif_to_uc('pyrite.cif')
+uc = read_cif('pyrite.cif')
 uc.write()
 
 ## list P1 coordinates
@@ -16,7 +16,7 @@ at_list = uc.atom_list()
 at_list.write()
 
 ## write an xyz file
-uc_to_xyz(uc,fname="pyrite.xyz",na=2,nb=2,nc=2)
+write_xyz(uc,fname="pyrite.xyz",na=2,nb=2,nc=2)
 
 #######
 # coordination calculations

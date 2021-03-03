@@ -2,35 +2,34 @@
 Test some xtal calcs using forsterite
 """
 ##############################
-from xtal.unitcell import cif_to_uc, uc_to_cif, uc_to_xyz 
+from xtal.unitcell import read_cif, write_cif
 ##############################
 
 ## generate a UnitCell instance 
 ## display cell contents
 print("** Forsterite unit cell")
-uc = cif_to_uc('forsterite_1.cif')
-uc.write()
+uc = read_cif('forsterite_1.cif')
+uc.show()
 
 ## print the P1 cell 
 print("P1 cell")
 atom_list = uc.atom_list()
-atom_list.write()
+atom_list.show()
 
 ## output xyz file
-uc_to_xyz(uc,fname="forsterite.xyz",cartesian=True,na=3,nb=3,nc=3,long_fmt=False)
-#uc_to_xyz(uc,fname="forsterite.xyz",cartesian=False)
+uc.write_xyz("forsterite.xyz",cartesian=True,na=3,nb=3,nc=3,long_fmt=False)
 
 ## output cif file with assymetric unit (similiar to what we read in)
-uc_to_cif(uc,fname="forsterite_frac.cif",p1_list=False)
+#write_cif(uc,fname="forsterite_frac.cif",p1_list=False)
 
 ## output cif file with P1 unit cell contents (no symmetry)
-uc_to_cif(uc,fname="forsterite_p1.cif",p1_list=True,na=2,nb=2,nc=2)
+#write_cif(uc,fname="forsterite_p1.cif",p1_list=True,na=2,nb=2,nc=2)
 
 #######
 # coordination calculations
 from pyxrs.xtal.coord import coord_calcs
 coord = coord_calcs(uc,rmax=2.5)
-coord.write(long_fmt=False)
+coord.show(long_fmt=False)
 coord.write(fname="coord.out")
 
 # run jmol

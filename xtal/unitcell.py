@@ -7,23 +7,18 @@ Authors/Modifications:
 
 Todo:
 -----
-* PositionGenerator
-  - Test that the add_op can parse all possible operations
-  ---> Make more general - ie operations of form (??):
-        a1*x+b1*y+c1*z+tx, a2*x+b2*y+c2*z+ty, a3*x+b3*y+c3*z+tz
-       (applies to both add_op and W_str)
+* UnitCell
+  - method to get all sym_ops from space groupd name...
+    (see space_grps.get_symops)
 
-* Add a dictionary of space groups (and plane groups and point groups) 
-  - lists symops as string reps
-  - therefore UnitCell can get symmetry operation using a space-group 
-    name/number + cell setting
-  - also include transforms (from Int tables) to change cell settings 
-    (esp non-primitive to primitive)
+* PositionGenerator
+  - Test that the add_sym_op parses all possible operations...
+
 
 Notes on symmetry operations:
 ----------------------------
 * The UnitCell class uses the PositionGenerator class to make symmetry
-  copies of the assymetric unit to generate space filling list of 
+  copies of the assymetric unit for generation of space filling list of 
   atomic coordinates (ie P1 cell).
 
 * The PositionGenerator makes symmetry copies according to:
@@ -45,15 +40,15 @@ Notes on symmetry operations:
        |r31, r32, r33,  tz|
        |  0,   0,   0,   1|
 
-  and we add a fourth (dummy) index to v and v_cp to make the dimension work.
+  and we add a fourth (dummy) index to v and v_cp to make the dimensions work.
   Note that the elements of W must be rational since applying a symmetry operation 
   to a lattice vector must generate another lattice vector.
   
 * If we transform the unit cell lattice (ie define a new set of basis vectors)
   we can also transform the symmetry operators according to the following.  
-  From the lattice module, a basis transform was defined that resulted in a 
+  In the lattice module, a basis transform is defined that results in a 
   a matrix M that is used to compute the indicies of a (stationary) vector in the
-  primed basis in terms of the original basis values as:
+  primed basis in terms of the original basis as:
 
     |x'|      |x|
     |y'| = M* |y|        - or -    v'  = M*v
@@ -73,7 +68,7 @@ Notes on symmetry operations:
 
 * We can also directly apply the augmented transform matricies (P and Q) 
   to the Seitz matricies, therefore including the transformation of the 
-  shift vectors:
+  shift vectors (see the lattice module):
 
     W'  = Q*W*P
 
@@ -88,11 +83,11 @@ import copy
 
 from xtal._common import atomic_symbols
 from xtal import lattice
-from xtal.cif_file import read_cif, write_cif
+from xtal import cif_file
 from xtal.atom_list import AtomList, _reduce_frac, _expand_frac
 
 ##########################################################################
-def cif_to_uc(fname):
+def read_cif(fname):
     """
     Read a cif file and return a UnitCell instance
 
@@ -104,7 +99,7 @@ def cif_to_uc(fname):
     -------
     * UnitCell instance
     """
-    cell,labels,atsyms,coords,symops,occ,ox,Uiso,Uaniso = read_cif(fname)
+    cell,labels,atsyms,coords,symops,occ,ox,Uiso,Uaniso = cif_file.read(fname)
     uc = UnitCell(a=cell[0],b=cell[1],c=cell[2],alpha=cell[3],beta=cell[4],gamma=cell[5])
     for j in range(len(labels)):
         if atsyms is not None: atsym = atsyms[j]
@@ -116,7 +111,7 @@ def cif_to_uc(fname):
             uc.add_sym_op(sym=sym)
     return uc
 
-def uc_to_cif(uc,fname,p1_list=True,na=1,nb=1,nc=1):
+def write_cif(uc, fname, p1_list=True, na=1, nb=1, nc=1):
     """
     Write unit cell data as a cif file
 
@@ -163,95 +158,98 @@ def uc_to_cif(uc,fname,p1_list=True,na=1,nb=1,nc=1):
             symop.append(W_str[0])
     else:
         symop = None
-    write_cif(fname,labels,uc.lattice,coords,atsym=atsym,symop=symop,occ=occ,ox=ox,Uiso=Uiso,Uaniso=Uaniso)
+    cif_file.write(fname, labels, uc.lattice, coords, atsym=atsym, symop=symop, 
+                   occ=occ, ox=ox, Uiso=Uiso, Uaniso=Uaniso)
 
-def uc_to_xyz(uc,fname=None,cartesian=True,na=1,nb=1,nc=1,long_fmt=False):
-    """
-    Write an xyz file
-
-    Arguments:
-    ----------
-    * fname: file name for output
-    * cartesian: if True output cartesian coordinates, otherwise fractional 
-    * na, nb, nc: number of unit cell repeats in each direction. These should be 
-                positive integers (ie expansion is symmetric about the origin)
-    * long_fmt:  if True writes long format
-
-    Returns:
-    -------
-    * If fname is None then this returns an AtomList instance
-    * If fname is not None, output is to the file
-
-    Notes:
-    ------
-    This always lists a full (P1) unit cell
-    """
-    atom_list = uc.atom_list(cartesian=cartesian,na=na,nb=nb,nc=nc)
-    atom_list.sort(ascend=True)
-    if fname is not None:
-        atom_list.write(fname,long_fmt=long_fmt)
-        return
-    else:
-        return atom_list
-
-def transform_unitcell(uc,Va=None,Vb=None,Vc=None,shift=None):
-    """
-    Compute a new UnitCell given a set of basis transform vectors.
-
-    Arguments:
-    ----------
-    * uc: UnitCell instance
-    * Va,Vb,Vc: Vectors, expressed in the original basis, defining the new 
-                set of basis vectors
-    * shift: Vector, expressed in the original basis, defining a shift of 
-             the unit cell 
-
-    Returns:
-    -------
-    * New UnitCell instance
-
-    Notes:
-    ------
-    If all V's are None, then a cartesian transform is performed
-    """
-    # create a lattice transform object
-    trns = lattice.LatticeTransform(uc.lattice, Va=Va, Vb=Vb, Vc=Vc, shift=shift)
-    # use cartesian if new basis not specified
-    if (Va is None) and (Vb is None) and (Vc is None): trns.cartesian()
-    # create a new unit cell
-    (a,b,c,alp,bet,gam) = trns.plat_params()
-    new_cell = UnitCell(a=a,b=b,c=c,alpha=alp,beta=bet,gamma=gam)
-    # transform the assymetric unit
-    for site in uc.sites:
-        label = site.label
-        atsym = site.atsym
-        ox = site.ox
-        occ = site.occ
-        Uiso = site.Uiso
-        vp = trns.vp([site.x, site.y, site.z])
-        Uaniso = num.zeros((3,3))
-        Uaniso[0,0] = site.Uaniso[0]; Uaniso[0,1] = site.Uaniso[1]
-        Uaniso[0,2] = site.Uaniso[2]; Uaniso[1,1] = site.Uaniso[3]
-        Uaniso[1,2] = site.Uaniso[4]; Uaniso[2,2] = site.Uaniso[5]
-        Uaniso = num.dot(num.dot(trns.M, Uaniso), trns.G)
-        # add atom to the new cell
-        new_cell.add_site(label,vp[0],vp[1],vp[2],atsym=atsym,ox=ox,occ=occ,Uiso=Uiso,
-                          Uaniso=num.array([Uaniso[0,0], Uaniso[0,1], Uaniso[0,2],
-                                            Uaniso[1,1], Uaniso[1,2], Uaniso[2,2]]))
-    # transform the symmetry operators (sietz matricies)
-    Q = num.zeros((4,4))
-    Q[:3,:3] = trns.M
-    Q[:3,3]  = trns.q
-    Q[3,3]   = 1.
-    P = num.zeros((4,4))
-    P[:3,:3] = trns.N
-    P[:3,3]  = trns.p
-    P[3,3]   = 1.
-    for W in uc.pg.W:
-        Wp = num.dot(Q,num.dot(W,P))
-        new_cell.pg.W.append(Wp)
-    return new_cell
-
+#XX delte this fcn
+#def write_xyz(uc, fname=None, cartesian=True, na=1, nb=1, nc=1, long_fmt=False):
+#    """
+#    Write an xyz file
+#
+#    Arguments:
+#    ----------
+#    * fname: file name for output
+#    * cartesian: if True output cartesian coordinates, otherwise fractional 
+#    * na, nb, nc: number of unit cell repeats in each direction. These should be 
+#                positive integers (ie expansion is symmetric about the origin)
+#    * long_fmt:  if True writes long format
+#
+#    Returns:
+#    -------
+#    * If fname is None then this returns an AtomList instance
+#    * If fname is not None, output is to the file
+#
+#    Notes:
+#    ------
+#    This always lists a full (P1) unit cell
+#    """
+#    atom_list = uc.atom_list(cartesian=cartesian,na=na,nb=nb,nc=nc)
+#    atom_list.sort(ascend=True)
+#    if fname is not None:
+#        atom_list.write(fname,long_fmt=long_fmt)
+#        return
+#    else:
+#        return atom_list
+#
+#XX delete this fcn
+#def transform_unitcell(uc,Va=None,Vb=None,Vc=None,shift=None):
+#    """
+#    Compute a new UnitCell given a set of basis transform vectors.
+#
+#    Arguments:
+#    ----------
+#    * uc: UnitCell instance
+#    * Va,Vb,Vc: Vectors, expressed in the original basis, defining the new 
+#                set of basis vectors
+#    * shift: Vector, expressed in the original basis, defining a shift of 
+#             the unit cell 
+#
+#    Returns:
+#    -------
+#    * New UnitCell instance
+#
+#    Notes:
+#    ------
+#    If all V's are None, then a cartesian transform is performed
+#    """
+#    # create a lattice transform object
+#    trns = lattice.LatticeTransform(uc.lattice, Va=Va, Vb=Vb, Vc=Vc, shift=shift)
+#    # use cartesian if new basis not specified
+#    if (Va is None) and (Vb is None) and (Vc is None): trns.cartesian()
+#    # create a new unit cell
+#    (a,b,c,alp,bet,gam) = trns.plat_params()
+#    new_cell = UnitCell(a=a,b=b,c=c,alpha=alp,beta=bet,gamma=gam)
+#    # transform the assymetric unit
+#    for site in uc.sites:
+#        label = site.label
+#        atsym = site.atsym
+#        ox = site.ox
+#        occ = site.occ
+#        Uiso = site.Uiso
+#        vp = trns.vp([site.x, site.y, site.z])
+#        Uaniso = num.zeros((3,3))
+#        Uaniso[0,0] = site.Uaniso[0]; Uaniso[0,1] = site.Uaniso[1]
+#        Uaniso[0,2] = site.Uaniso[2]; Uaniso[1,1] = site.Uaniso[3]
+#        Uaniso[1,2] = site.Uaniso[4]; Uaniso[2,2] = site.Uaniso[5]
+#        Uaniso = num.dot(num.dot(trns.M, Uaniso), trns.G)
+#        # add atom to the new cell
+#        new_cell.add_site(label,vp[0],vp[1],vp[2],atsym=atsym,ox=ox,occ=occ,Uiso=Uiso,
+#                          Uaniso=num.array([Uaniso[0,0], Uaniso[0,1], Uaniso[0,2],
+#                                            Uaniso[1,1], Uaniso[1,2], Uaniso[2,2]]))
+#    # transform the symmetry operators (sietz matricies)
+#    Q = num.zeros((4,4))
+#    Q[:3,:3] = trns.M
+#    Q[:3,3]  = trns.q
+#    Q[3,3]   = 1.
+#    P = num.zeros((4,4))
+#    P[:3,:3] = trns.N
+#    P[:3,3]  = trns.p
+#    P[3,3]   = 1.
+#    for W in uc.pg.W:
+#        Wp = num.dot(Q,num.dot(W,P))
+#        new_cell.pg.W.append(Wp)
+#    return new_cell
+#
 ##########################################################################
 class UnitCell:
     """
@@ -263,7 +261,7 @@ class UnitCell:
     self.pg      -> symmetry operations. PositionGenerator 
     self.lattice -> unit cell lattice.  lattice.Lattice
     """
-    def __init__(self,a=10.,b=10.,c=10.,alpha=90.,beta=90.,gamma=90.):
+    def __init__(self, a=10., b=10., c=10., alpha=90., beta=90., gamma=90., verbose=True):
         """
         Initialize
 
@@ -273,7 +271,7 @@ class UnitCell:
         * alpha, beta, gamma in degrees
         """
         self._description = "Bulk"
-        self.verbose = True
+        self.verbose = verbose
         self.sites   = [] 
         self.pg      = PositionGenerator() 
         self.lattice = lattice.Lattice(a=a,b=b,c=c,alpha=alpha,beta=beta,gamma=gamma)
@@ -300,21 +298,54 @@ class UnitCell:
             lout = lout + repr(self.pg)
         return lout
 
-    def write(self,fname=None,long_fmt=False):
+#added
+    def show(self, long_fmt=False):
         """
-        write to a file (or print to screen)
+        Print to screen
 
         Arguments:
         ----------
-        * fname: output file (if None, print to stdout)
         * long_fmt: if True use long format (include symm ops), if False short format
         """
-        if fname is None:
-            print(self._write(long_fmt=long_fmt))
-        else:
-            fout = open(fname,'w')
-            fout.write(self._write(long_fmt=long_fmt))
-            fout.close()
+        print(self._write(long_fmt=long_fmt))
+
+    def write(self, fname="unitcell.out", long_fmt=False):
+        """
+        write to a file
+
+        Arguments:
+        ----------
+        * fname: output file 
+        * long_fmt: if True use long format (include symm ops), if False short format
+        """
+        fout = open(fname,'w')
+        fout.write(self._write(long_fmt=long_fmt))
+        fout.close()
+#added
+    def write_xyz(self, fname="unitcell.xyz", cartesian=True, na=1, nb=1, nc=1, long_fmt=False):
+        """
+        Write an xyz file
+
+        Arguments:
+        ----------
+        * fname: file name for output
+        * cartesian: if True output cartesian coordinates, otherwise fractional 
+        * na, nb, nc: number of unit cell repeats in each direction. These should be 
+                    positive integers (ie expansion is symmetric about the origin)
+        * long_fmt:  if True writes long format
+
+        Returns:
+        -------
+        * If fname is None then this returns an AtomList instance
+        * If fname is not None, output is to the file
+
+        Notes:
+        ------
+        This always lists a full (P1) unit cell
+        """
+        atom_list = self.atom_list(cartesian=cartesian,na=na,nb=nb,nc=nc)
+        atom_list.sort(ascend=True)
+        atom_list.write_xyz(fname,long_fmt=long_fmt)
 
     def add_site(self,label,x,y,z,atsym=None,occ=1.,ox=99,Uiso=0,Uaniso=[0.,0.,0.,0.,0.,0.]):
         """
@@ -421,6 +452,60 @@ class UnitCell:
             return atom_list.cartesian()
         else:
             return atom_list
+
+#added
+    def transform(self,Va=None,Vb=None,Vc=None,shift=None):
+        """
+        Generate a new UnitCell given a set of basis transform vectors.
+
+        Arguments:
+        ----------
+        * Va,Vb,Vc: Vectors, expressed in the original basis, defining the new 
+                    set of basis vectors
+        * shift: Vector, expressed in the original basis, defining a shift of 
+                the unit cell 
+
+        Returns:
+        -------
+        * New UnitCell instance
+
+        Notes:
+        ------
+        If all V's are None, then a cartesian transform is performed
+        """
+        # create a lattice transform object
+        trns = lattice.LatticeTransform(self.lattice, Va=Va, Vb=Vb, Vc=Vc, shift=shift)
+        # use cartesian if new basis not specified
+        if (Va is None) and (Vb is None) and (Vc is None): trns.cartesian()
+        # create a new unit cell
+        (a,b,c,alp,bet,gam) = trns.plat_params()
+        new_cell = UnitCell(a=a,b=b,c=c,alpha=alp,beta=bet,gamma=gam)
+        # transform the assymetric unit
+        for site in self.sites:
+            label = site.label
+            atsym = site.atsym
+            ox = site.ox
+            occ = site.occ
+            Uiso = site.Uiso
+            vp = trns.vp([site.x, site.y, site.z])
+            Uaniso = num.zeros((3,3))
+            Uaniso[0,0] = site.Uaniso[0]; Uaniso[0,1] = site.Uaniso[1]
+            Uaniso[0,2] = site.Uaniso[2]; Uaniso[1,1] = site.Uaniso[3]
+            Uaniso[1,2] = site.Uaniso[4]; Uaniso[2,2] = site.Uaniso[5]
+            Uaniso = num.dot(num.dot(trns.M, Uaniso), trns.G)
+            # add atom to the new cell
+            new_cell.add_site(label,vp[0],vp[1],vp[2],atsym=atsym,ox=ox,occ=occ,Uiso=Uiso,
+                              Uaniso=num.array([Uaniso[0,0], Uaniso[0,1], Uaniso[0,2],
+                                                Uaniso[1,1], Uaniso[1,2], Uaniso[2,2]]))
+        # transform the symmetry operators (sietz matricies)
+        Q = num.zeros((4,4))
+        Q[:3,:3] = trns.M; Q[:3,3]  = trns.q; Q[3,3]   = 1.
+        P = num.zeros((4,4))
+        P[:3,:3] = trns.N; P[:3,3]  = trns.p; P[3,3]   = 1.
+        for W in self.pg.W:
+            Wp = num.dot(Q, num.dot(W,P))
+            new_cell.pg.W.append(Wp)
+        return new_cell
 
 class AtomicSite:
     """
@@ -535,7 +620,7 @@ class PositionGenerator:
         --------
         >>sym1 = "x,y,z"
         >>shift1 = "1/2, 1/2, 0"
-        >>p.add_op(sym=sym1,shift=shift1)
+        >>p.add_sym_op(sym=sym1,shift=shift1)
         """
         #check shift
         if len(shift) > 0:
@@ -702,5 +787,6 @@ def _test1():
 ##########################################################################
 ##########################################################################
 if __name__ == "__main__":
-    p = _test1()
+    #p = _test1()
+    uc = read_cif('COD_Fe2O3.cif')
 

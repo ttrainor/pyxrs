@@ -545,20 +545,20 @@ class LatticeTransform:
 
     def _update(self,Va=None,Vb=None,Vc=None,shift=None):
         """ update """
-        if Va is not None: self.Va = num.array(Va,dtype=float)
-        if Vb is not None: self.Vb = num.array(Vb,dtype=float)
-        if Vc is not None: self.Vc = num.array(Vc,dtype=float)
-        F = [self.Va,self.Vb,self.Vc]
+        if Va is not None: self.Va = num.array(Va, dtype=float)
+        if Vb is not None: self.Vb = num.array(Vb, dtype=float)
+        if Vc is not None: self.Vc = num.array(Vc, dtype=float)
+        F = [self.Va, self.Vb, self.Vc]
         self.F = num.array(F, dtype=float)
         self.G = num.linalg.inv(self.F)
         self.M = self.G.transpose()
         self.N = self.F.transpose()
         if shift is not None: 
-            self.p = num.array(shift,dtype=float)
+            self.p = num.array(shift, dtype=float)
             self.q = -1*num.dot(self.M,self.p)
         else:
-            self.p = num.zeros(3,dtype=float)
-            self.q = num.zeros(3,dtype=float)
+            self.p = num.zeros(3, dtype=float)
+            self.q = num.zeros(3, dtype=float)
         
     def cartesian(self,shift=[0.,0.,0.]):
         """
