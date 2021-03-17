@@ -1,7 +1,7 @@
-include Readme.txt setup.py MANIFEST.in
+include Readme.rst setup.py MANIFEST.in
 exclude *.pyc *~ __pycache__
 
-recursive-include doc *.txt
+recursive-include doc *.txt *.rst
 
 recursive-include examples *.py  *.cif  *.spt *.txt *.spc
 recursive-exclude examples *.pyc  __pycache__
