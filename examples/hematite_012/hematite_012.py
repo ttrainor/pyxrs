@@ -3,8 +3,8 @@ Generate a surface cell for hematite (1,-1,2) surface
 """
 ##############################
 import numpy as num
-from xtal.unitcell import read_cif, write_cif, write_xyz 
-from xtal.surface import SurfaceCell, surface_to_xyz
+from xtal.unitcell import read_cif, write_cif
+from xtal.surface import SurfaceCell
 ##############################
 
 ### get the bulk unit cell
@@ -37,11 +37,11 @@ surf.write()
 #for j in range(len(surf.Vr_lst)): print(surf.Vr_lst[j])
 
 ## write surface coordinate files
-surface_to_xyz(surf,fname="hematite_012.xyz",cartesian=True,na=2,nb=2,nbulk=2,long_fmt=True)
-surface_to_xyz(surf,fname="hematite_012.frac",cartesian=False,na=1,nb=1,nbulk=2,long_fmt=True)
+surf.write_xyz(fname="hematite_012.xyz",cartesian=True,na=2,nb=2,nbulk=2,long_fmt=True)
+surf.write_xyz(fname="hematite_012.frac",cartesian=False,na=1,nb=1,nbulk=2,long_fmt=True)
 
 # coordination calculations
-from pyxrs.xtal.coord import coord_calcs
+from xtal.coord import coord_calcs
 #coord = coord_calcs(surf,rmax=2.5)
 coord = coord_calcs(surf,rmax=2.5, labels=['O_1:t22','Fe_1:t3','Fe_1:b3'])
 coord.write(long_fmt=False)

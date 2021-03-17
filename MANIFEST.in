@@ -1,13 +1,18 @@
 include Readme.txt setup.py MANIFEST.in
 exclude *.pyc *~ __pycache__
+
 recursive-include doc *.txt
+
 recursive-include examples *.py  *.cif  *.spt *.txt *.spc
 recursive-exclude examples *.pyc  __pycache__
+
+recursive-include scripts *
+
+recursive-include xtal *.py *.cif
+recursive-exclude xtal *.pyc  __pycache__ 
+prune xtal/_bvparams
+
 recursive-include xtlgeo *.py
 recursive-exclude xtlgeo *.pyc  __pycache__
-recursive-include scripts *
-recursive-include html *
-recursive-exclude html *.pyc  __pycache__
-recursive-include xtal *.py *.cif
-recursive-exclude xtal *.pyc  __pycache__
+
 

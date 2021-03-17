@@ -161,95 +161,6 @@ def write_cif(uc, fname, p1_list=True, na=1, nb=1, nc=1):
     cif_file.write(fname, labels, uc.lattice, coords, atsym=atsym, symop=symop, 
                    occ=occ, ox=ox, Uiso=Uiso, Uaniso=Uaniso)
 
-#XX delte this fcn
-#def write_xyz(uc, fname=None, cartesian=True, na=1, nb=1, nc=1, long_fmt=False):
-#    """
-#    Write an xyz file
-#
-#    Arguments:
-#    ----------
-#    * fname: file name for output
-#    * cartesian: if True output cartesian coordinates, otherwise fractional 
-#    * na, nb, nc: number of unit cell repeats in each direction. These should be 
-#                positive integers (ie expansion is symmetric about the origin)
-#    * long_fmt:  if True writes long format
-#
-#    Returns:
-#    -------
-#    * If fname is None then this returns an AtomList instance
-#    * If fname is not None, output is to the file
-#
-#    Notes:
-#    ------
-#    This always lists a full (P1) unit cell
-#    """
-#    atom_list = uc.atom_list(cartesian=cartesian,na=na,nb=nb,nc=nc)
-#    atom_list.sort(ascend=True)
-#    if fname is not None:
-#        atom_list.write(fname,long_fmt=long_fmt)
-#        return
-#    else:
-#        return atom_list
-#
-#XX delete this fcn
-#def transform_unitcell(uc,Va=None,Vb=None,Vc=None,shift=None):
-#    """
-#    Compute a new UnitCell given a set of basis transform vectors.
-#
-#    Arguments:
-#    ----------
-#    * uc: UnitCell instance
-#    * Va,Vb,Vc: Vectors, expressed in the original basis, defining the new 
-#                set of basis vectors
-#    * shift: Vector, expressed in the original basis, defining a shift of 
-#             the unit cell 
-#
-#    Returns:
-#    -------
-#    * New UnitCell instance
-#
-#    Notes:
-#    ------
-#    If all V's are None, then a cartesian transform is performed
-#    """
-#    # create a lattice transform object
-#    trns = lattice.LatticeTransform(uc.lattice, Va=Va, Vb=Vb, Vc=Vc, shift=shift)
-#    # use cartesian if new basis not specified
-#    if (Va is None) and (Vb is None) and (Vc is None): trns.cartesian()
-#    # create a new unit cell
-#    (a,b,c,alp,bet,gam) = trns.plat_params()
-#    new_cell = UnitCell(a=a,b=b,c=c,alpha=alp,beta=bet,gamma=gam)
-#    # transform the assymetric unit
-#    for site in uc.sites:
-#        label = site.label
-#        atsym = site.atsym
-#        ox = site.ox
-#        occ = site.occ
-#        Uiso = site.Uiso
-#        vp = trns.vp([site.x, site.y, site.z])
-#        Uaniso = num.zeros((3,3))
-#        Uaniso[0,0] = site.Uaniso[0]; Uaniso[0,1] = site.Uaniso[1]
-#        Uaniso[0,2] = site.Uaniso[2]; Uaniso[1,1] = site.Uaniso[3]
-#        Uaniso[1,2] = site.Uaniso[4]; Uaniso[2,2] = site.Uaniso[5]
-#        Uaniso = num.dot(num.dot(trns.M, Uaniso), trns.G)
-#        # add atom to the new cell
-#        new_cell.add_site(label,vp[0],vp[1],vp[2],atsym=atsym,ox=ox,occ=occ,Uiso=Uiso,
-#                          Uaniso=num.array([Uaniso[0,0], Uaniso[0,1], Uaniso[0,2],
-#                                            Uaniso[1,1], Uaniso[1,2], Uaniso[2,2]]))
-#    # transform the symmetry operators (sietz matricies)
-#    Q = num.zeros((4,4))
-#    Q[:3,:3] = trns.M
-#    Q[:3,3]  = trns.q
-#    Q[3,3]   = 1.
-#    P = num.zeros((4,4))
-#    P[:3,:3] = trns.N
-#    P[:3,3]  = trns.p
-#    P[3,3]   = 1.
-#    for W in uc.pg.W:
-#        Wp = num.dot(Q,num.dot(W,P))
-#        new_cell.pg.W.append(Wp)
-#    return new_cell
-#
 ##########################################################################
 class UnitCell:
     """
@@ -298,7 +209,6 @@ class UnitCell:
             lout = lout + repr(self.pg)
         return lout
 
-#added
     def show(self, long_fmt=False):
         """
         Print to screen
@@ -321,7 +231,7 @@ class UnitCell:
         fout = open(fname,'w')
         fout.write(self._write(long_fmt=long_fmt))
         fout.close()
-#added
+
     def write_xyz(self, fname="unitcell.xyz", cartesian=True, na=1, nb=1, nc=1, long_fmt=False):
         """
         Write an xyz file
@@ -453,7 +363,6 @@ class UnitCell:
         else:
             return atom_list
 
-#added
     def transform(self,Va=None,Vb=None,Vc=None,shift=None):
         """
         Generate a new UnitCell given a set of basis transform vectors.

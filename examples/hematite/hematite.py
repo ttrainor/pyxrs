@@ -2,7 +2,7 @@
 Test some xtal calcs using hematite
 """
 ##############################
-from xtal.unitcell import read_cif, write_cif, write_xyz 
+from xtal.unitcell import read_cif, write_cif
 ##############################
 
 ## generate a UnitCell instance for hematite
@@ -11,17 +11,16 @@ uc = read_cif('hematite.cif')
 #uc = read_cif('COD_Fe2O3_1.cif')
 #uc = read_cif('COD_Fe2O3_2.cif')
 
-
 uc.write(long_fmt=False)
 
 ## print the P1 cell 
 print("P1 cell")
 at_list = uc.atom_list()
-at_list.write()
+at_list.write_xyz()
 
 ## output xyz file
-write_xyz(uc,fname="hematite.xyz",na=2,nb=2,nc=2,long_fmt=True)
-#write_xyz(uc,fname="hematite.xyz",cartesian=False)
+uc.write_xyz(fname="hematite.xyz",na=2,nb=2,nc=2,long_fmt=True)
+#uc.write_xyz(fname="hematite.xyz",cartesian=False)
 
 ## output cif file with assymetric unit (similiar to what we read in)
 #write_cif(uc,fname="hematite_frac.cif",p1_list=False)
@@ -31,7 +30,7 @@ write_xyz(uc,fname="hematite.xyz",na=2,nb=2,nc=2,long_fmt=True)
 
 #######
 # coordination calculations
-from pyxrs.xtal.coord import coord_calcs
+from xtal.coord import coord_calcs
 coord = coord_calcs(uc,rmax=2.5)
 coord.write()
 coord.write(fname="coord.out")

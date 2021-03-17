@@ -2,7 +2,7 @@
 Test some xtal calcs using pyrite
 """
 ##############################
-from xtal.unitcell import read_cif, write_xyz
+from xtal.unitcell import read_cif
 ##############################
 
 ## Read pyrite cif file
@@ -13,14 +13,14 @@ uc.write()
 ## list P1 coordinates
 print("P1 cell")
 at_list = uc.atom_list()
-at_list.write()
+at_list.write_xyz()
 
 ## write an xyz file
-write_xyz(uc,fname="pyrite.xyz",na=2,nb=2,nc=2)
+uc.write_xyz(fname="pyrite.xyz",na=2,nb=2,nc=2)
 
 #######
 # coordination calculations
-from pyxrs.xtal.coord import coord_calcs
+from xtal.coord import coord_calcs
 coord = coord_calcs(uc,rmax=2.5)
 coord.write()
 coord.write(fname="coord.out")

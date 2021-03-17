@@ -27,7 +27,7 @@ Install
 * Install the packages into your site-packages using: 
   `>>python3 setup.py install `
 
-* This will install 2 seperate packages:  xtal and xtlgeo
+* This will install 2 separate packages:  xtal and xtlgeo
   You can edit the setup file to only install one of the packages
   if you like, or to install it to a custom location.
 

@@ -136,60 +136,6 @@ from xtal import unitcell
 from xtal.atom_list import merge_alist, AtomList, _expand_, _expand_frac, _reduce_frac 
 
 ##########################################################################
-
-# HERE move surface_to_xyz into the surface class (same name as in unitcell)
-
-#def surface_to_xyz(surf,fname=None,cartesian=True,na=1,nb=1,nbulk=1,term=-99,long_fmt=False):
-#    """
-#    List surface file
-#
-#    Parameters:
-#    -----------
-#    * surf: SurfaceCell instance
-#    * fname: output file
-#    * cartesian: if True output in cartesian, otherwise in fractional coordinates
-#    * na, nb: number of cell repeats in the in-plane (a,b) directions
-#    * nbulk: number of repeats of the unit cell in the "bulk" direction (i.e. -c)
-#             if nbulk=0, then the model will only include the "termination-layer"
-#             with no unit cell repeats in the "bulk" direction
-#    * term: atomic layer that defines the surface termination.  
-#            if term=None the model will only consist of the "bulk-surface-model"
-#            if term=-99 use the current value of term as already specified in the surf object
-#            if term=0 then the model terminates at the top of the surface unit cell
-#            if term=+1 then one atomic layer is added on top
-#            if term=-1 then one atomic layer is removed from the top 
-#            etc.
-#    * long_fmt: output in long format
-#
-#    Returns:
-#    -------
-#    * If fname is not None, output is to the file
-#    * If fname is None then this returns an AtomList instance
-#
-#    Notes:
-#    ------
-#    * na, nb, nbulk should all be positive integers
-#    * na and nb defines the inplane extent of the slab
-#    * nbulk defines the thickness of the "bulk" part of the slab
-#    * term, if not None, defines which atomic layer is the termination 
-#      (and therefore defines how "thick" the terminating layer of the slab is)
-#      if term is not -99, then surf will be updated with the new term value
-#    * Note if nbulk=0 and term=None this function returns None (ie no model!)
-#    """
-#    atlist = surf.atom_list(cartesian=cartesian,na=na,nb=nb,nbulk=nbulk,term=term)
-#    if atlist == None: 
-#        print("No atoms returned in surface_to_xyz")
-#        return
-#    if fname is not None:
-#        fout = open(fname,'w')
-#        fout.write("%i\n" % atlist.natoms) 
-#        fout.write(atlist._write(long_fmt=long_fmt,header=True))
-#        fout.close()
-#        return
-#    else:
-#        return atom_list
-#
-##########################################################################
 class SurfaceCell:
     """
     Surface unit cell class
@@ -275,7 +221,6 @@ class SurfaceCell:
             lout = lout + "\n"
         return lout
 
-#HERE need one function write and another show (same as unitcell)
     def show(self,long_fmt=True):
         """
         write summary to std out
@@ -299,7 +244,6 @@ class SurfaceCell:
         fout.write(self._write(long_fmt=long_fmt))
         fout.close()
 
-#added
     def write_xyz(self,fname="surfacecell.xyz",cartesian=True,na=1,nb=1,nbulk=1,term=-99,long_fmt=False):
         """
         List surface file

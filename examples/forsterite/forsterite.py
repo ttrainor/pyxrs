@@ -27,7 +27,7 @@ uc.write_xyz("forsterite.xyz",cartesian=True,na=3,nb=3,nc=3,long_fmt=False)
 
 #######
 # coordination calculations
-from pyxrs.xtal.coord import coord_calcs
+from xtal.coord import coord_calcs
 coord = coord_calcs(uc,rmax=2.5)
 coord.show(long_fmt=False)
 coord.write(fname="coord.out")

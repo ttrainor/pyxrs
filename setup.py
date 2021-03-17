@@ -21,7 +21,7 @@ Setup file to install pyxrs into site-packages.
 * To keep track of where the files are installed (e.g. so you can remove them)
     >>python3 setup.py install  --record=files.txt
 
-* To seperate build and install:
+* To separate build and install:
     >>python3 setup.py build
     >>python3 setup.py install
 
@@ -102,10 +102,10 @@ package_data = {}
 
 ### call the setup command
 name    = 'pyxrs'
-version = '0.1'
+version = '0.11'
 author  = "Trainor"
 email   = "tptrainor@alaska.edu"
-descr   = "python xtalography and diffraction calculations"
+descr   = "python crystallography and diffraction calculations"
 setup( name = name,
        version = version,
        author =  author,
